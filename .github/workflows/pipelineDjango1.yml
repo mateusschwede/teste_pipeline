@@ -1,0 +1,54 @@
+name: Django API Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verificar repositório
+      uses: actions/checkout@v3
+    
+    - name: Clonar repositório da API REST Django
+      run: |
+        git clone https://github.com/mateusschwede/music_django_api_rest.git
+        cd music_django_api_rest/music_project
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Instalar dependências
+      working-directory: music_django_api_rest/music_project
+      run: |
+        python -m pip install --updgrade pip
+        pip install django djangorestframework
+    
+    - name: Montar migrations
+      working-directory: music_django_api_rest/music_project
+      run: |
+        python manage.py makemigrations && python manage.py migrate
+    
+    - name: Iniciar o servidor Django
+      working-directory: music_django_api_rest/music_project
+      run: |
+        nohup python manage.py runserver &
+    
+    - name: Aguardar servidor iniciar
+      run: |
+        sleep 10
+
+    - name: Teste de requisição POST
+      run: |
+        curl -X POST http://localhost:8000/api/musics/ \
+        -H "Content-Type: application/json" \
+        -d '{"title": "Yesterday", "artist": "The Beatles", "album": "Yesterday Album"}'
+    
+    - name: Teste de requisição GET
+      run: |
+        curl http://localhost:8000/api/musics/
