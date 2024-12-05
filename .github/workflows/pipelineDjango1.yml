@@ -47,7 +47,7 @@ jobs:
       run: |
         curl -X POST http://localhost:8000/api/musics/ \
         -H "Content-Type: application/json" \
-        -d '{"title": "Yesterday", "artist": "The Beatles", "album": "Yesterday Album"}'
+        -d '{"title": "Yesterday", "artist": "The Beatles", "album": "Yesterday Album", "release-date": "2000-12-25"}'
     
     - name: Teste de requisição GET
       run: |
